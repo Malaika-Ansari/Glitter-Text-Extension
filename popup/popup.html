@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GlitterText Dashboard</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup-wrapper">
+    <!-- 1. Header with branding and status indicator -->
+    <header class="header">
+      <div class="brand">
+        <div class="logo-box" title="GlitterText Studio">
+          <svg viewBox="0 0 24 24" width="22" height="22" class="sparkle-svg" aria-hidden="true">
+            <defs>
+              <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#fffbe0"/>
+                <stop offset="35%" stop-color="#e5b842"/>
+                <stop offset="70%" stop-color="#c69527"/>
+                <stop offset="100%" stop-color="#8a5a06"/>
+              </linearGradient>
+              <radialGradient id="glintCenter" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#ffffff"/>
+                <stop offset="60%" stop-color="#e5b842"/>
+                <stop offset="100%" stop-color="transparent"/>
+              </radialGradient>
+            </defs>
+            <path d="M12 0L14.7 9.3L24 12L14.7 14.7L12 24L9.3 14.7L0 12L9.3 9.3L12 0Z" fill="url(#goldGradient)"/>
+            <path d="M12 4.5L13.8 10.2L19.5 12L13.8 13.8L12 19.5L10.2 13.8L4.5 12L10.2 10.2L12 4.5Z" fill="url(#goldGradient)" opacity="0.75"/>
+            <circle cx="12" cy="12" r="2.5" fill="url(#glintCenter)"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <div class="brand-name-row">
+            <h1 class="brand-name">Glitter<span class="gold-gradient">Text</span></h1>
+            <span class="brand-version-badge">v1.0</span>
+          </div>
+          <span class="brand-caption">Luxury Typography Studio</span>
+        </div>
+      </div>
+      <div class="header-status-wrap" title="Current extension active status">
+        <span class="status-indicator-dot" id="statusDot"></span>
+        <span class="badge-status" id="statusBadge">DISABLED</span>
+      </div>
+    </header>
+
+    <!-- Save Feedback Toast Notification -->
+    <div class="save-toast" id="saveToast" aria-live="polite">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+        <polyline points="20 6 9 17 4 12"></polyline>
+      </svg>
+      <span id="saveToastText">Settings Saved</span>
+    </div>
+
+    <!-- Restricted Page Warning -->
+    <div class="restricted-alert" id="restrictedAlert" style="display: none;">
+      <div class="alert-icon">⚠️</div>
+      <div class="alert-content">
+        <div class="alert-title">Restricted System Page</div>
+        <div class="alert-desc">Chrome security prevents extensions on system or webstore pages. Settings apply to all regular websites.</div>
+      </div>
+    </div>
+
+    <!-- 2. Master Global ON/OFF Card -->
+    <section class="master-card" id="masterCard">
+      <div class="master-card-inner">
+        <div class="status-summary">
+          <h2 class="master-heading" id="masterHeading">GlitterText is OFF</h2>
+          <p class="master-subtext" id="masterSubtext">Original webpage text appearance is preserved.</p>
+        </div>
+
+        <!-- Luxury Interactive Toggle Switch -->
+        <label class="luxury-switch" for="globalToggle" aria-label="Master Extension Toggle" title="Toggle GlitterText customization ON or OFF across all websites">
+          <input type="checkbox" id="globalToggle">
+          <span class="luxury-slider">
+            <span class="slider-sparkle" aria-hidden="true"></span>
+          </span>
+        </label>
+      </div>
+    </section>
+
+    <!-- 11. Live Glitter Text Preview Card (Featured at top for immediate feedback) -->
+    <section class="preview-card" id="previewCard" aria-label="Live Typography Preview">
+      <div class="preview-header">
+        <div class="preview-title-wrap">
+          <span class="preview-label">Live Preview</span>
+          <span class="preview-scale-tag" id="previewScaleTag">Scale: 16px</span>
+        </div>
+        <div class="preview-badge-row">
+          <span class="preview-pill" id="previewColorPill" title="Active Glitter Color Palette">Metallic Gold</span>
+          <span class="preview-pill" id="previewSpeedPill" title="Shimmer Animation Speed">Normal 5.5s</span>
+        </div>
+      </div>
+      <div class="preview-stage" id="previewStage" title="Live Preview of Text Customization">
+        <h3 class="preview-heading" id="previewHeading">Glitter Typography</h3>
+        <p class="preview-paragraph" id="previewParagraph">Custom blended glitter particles embedded inside letters with specular shimmer highlights.</p>
+        <div class="preview-interactive-row">
+          <button type="button" class="preview-btn" id="previewButton" title="Interactive button sample">Sample Button</button>
+          <a href="#" class="preview-link" id="previewLink" onclick="return false;" title="Interactive link sample">Sample Link</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Controls Dashboard (Organized into Collapsible Sections) -->
+    <main class="controls-panel" id="controlsPanel">
+
+      <!-- SECTION 1: Glitter Colour Picker, Blends & Presets (Items 4 & 5) -->
+      <section class="accordion-card open" id="accordionPaletteCard">
+        <button type="button" class="accordion-header" id="accordionPaletteHeader" aria-expanded="true">
+          <div class="accordion-title-wrap">
+            <span class="accordion-icon">🎨</span>
+            <div class="accordion-titles">
+              <span class="accordion-title">Colour &amp; Blending</span>
+              <span class="accordion-sub">Presets, 1–3 blends &amp; favourites</span>
+            </div>
+          </div>
+          <div class="accordion-meta">
+            <span class="accordion-badge" id="paletteSummaryBadge">Metallic Gold</span>
+            <svg class="chevron-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </div>
+        </button>
+
+        <div class="accordion-body" id="accordionPaletteBody">
+          <!-- Blend Mode Tabs -->
+          <div class="blend-mode-tabs" id="blendModeTabs" role="tablist">
+            <button type="button" class="blend-tab active" data-mode="single" role="tab" aria-selected="true" title="Single colour glitter styling">1 Colour</button>
+            <button type="button" class="blend-tab" data-mode="dual" role="tab" aria-selected="false" title="Blend 2 custom glitter colours">2 Blend</button>
+            <button type="button" class="blend-tab" data-mode="triple" role="tab" aria-selected="false" title="Blend 3 custom glitter colours">3 Blend</button>
+            <button type="button" class="blend-tab" data-mode="rainbow" role="tab" aria-selected="false" title="Prismatic multi-colour rainbow glitter">Rainbow</button>
+          </div>
+
+          <!-- Native HTML Colour Pickers Slots -->
+          <div class="color-slots-row" id="colorSlotsRow">
+            <!-- Slot 1 -->
+            <div class="color-slot" id="slotWrap1">
+              <span class="slot-label">Primary</span>
+              <div class="color-input-wrapper">
+                <input type="color" id="colorPicker1" value="#e5b842" aria-label="Primary glitter colour" title="Choose primary glitter base colour">
+                <span class="color-hex-tag" id="colorHex1" title="Primary colour hex code">#E5B842</span>
+              </div>
+            </div>
+
+            <!-- Slot 2 -->
+            <div class="color-slot" id="slotWrap2" style="display: none;">
+              <span class="slot-label">Secondary</span>
+              <div class="color-input-wrapper">
+                <input type="color" id="colorPicker2" value="#00b894" aria-label="Secondary glitter colour" title="Choose secondary blend colour">
+                <span class="color-hex-tag" id="colorHex2" title="Secondary colour hex code">#00B894</span>
+              </div>
+            </div>
+
+            <!-- Slot 3 -->
+            <div class="color-slot" id="slotWrap3" style="display: none;">
+              <span class="slot-label">Accent</span>
+              <div class="color-input-wrapper">
+                <input type="color" id="colorPicker3" value="#d63031" aria-label="Accent glitter colour" title="Choose tertiary accent colour">
+                <span class="color-hex-tag" id="colorHex3" title="Tertiary colour hex code">#D63031</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Curated Presets Grid -->
+          <div class="presets-section">
+            <div class="section-subhead">
+              <span class="sub-label">Curated Metallic Presets</span>
+              <button type="button" class="btn-reset-gold" id="btnResetGold" title="Reset to default 24K Metallic Gold">
+                ↺ Default Gold
+              </button>
+            </div>
+            <div class="presets-grid" id="presetsGrid">
+              <button type="button" class="preset-pill active" data-preset="metallic-gold" title="Apply 24K Metallic Gold glitter preset">
+                <span class="swatch-dot" style="background: #e5b842;"></span>
+                <span>Metallic Gold</span>
+              </button>
+              <button type="button" class="preset-pill" data-preset="rose-gold" title="Apply Rose Gold glitter preset">
+                <span class="swatch-dot" style="background: #b76e79;"></span>
+                <span>Rose Gold</span>
+              </button>
+              <button type="button" class="preset-pill" data-preset="silver" title="Apply Silver glitter preset">
+                <span class="swatch-dot" style="background: #d8d8d8;"></span>
+                <span>Silver</span>
+              </button>
+              <button type="button" class="preset-pill" data-preset="pink" title="Apply Sparkling Pink glitter preset">
+                <span class="swatch-dot" style="background: #ff69b4;"></span>
+                <span>Pink</span>
+              </button>
+              <button type="button" class="preset-pill" data-preset="purple" title="Apply Royal Purple glitter preset">
+                <span class="swatch-dot" style="background: #9b59b6;"></span>
+                <span>Purple</span>
+              </button>
+              <button type="button" class="preset-pill" data-preset="royal-blue" title="Apply Royal Blue glitter preset">
+                <span class="swatch-dot" style="background: #1e3799;"></span>
+                <span>Royal Blue</span>
+              </button>
+              <button type="button" class="preset-pill" data-preset="ruby-red" title="Apply Ruby Red glitter preset">
+                <span class="swatch-dot" style="background: #d63031;"></span>
+                <span>Ruby Red</span>
+              </button>
+              <button type="button" class="preset-pill" data-preset="emerald-green" title="Apply Emerald Green glitter preset">
+                <span class="swatch-dot" style="background: #00b894;"></span>
+                <span>Emerald Green</span>
+              </button>
+              <button type="button" class="preset-pill" data-preset="rainbow" title="Apply Prismatic Rainbow glitter preset">
+                <span class="swatch-dot rainbow-swatch"></span>
+                <span>Rainbow</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Saved Favourites -->
+          <div class="favourites-section">
+            <div class="favourites-header">
+              <span class="sub-label">Saved Favourites</span>
+              <button type="button" class="btn-save-fav" id="btnSaveFavourite" title="Save current combination">
+                ★ Save Favourite
+              </button>
+            </div>
+            <div class="favourites-chips" id="favouritesChips"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 2: Glitter Intensity & Sparkle Brightness (Items 6 & 8) -->
+      <section class="accordion-card" id="accordionEffectsCard">
+        <button type="button" class="accordion-header" id="accordionEffectsHeader" aria-expanded="false">
+          <div class="accordion-title-wrap">
+            <span class="accordion-icon">✨</span>
+            <div class="accordion-titles">
+              <span class="accordion-title">Intensity &amp; Sparkle</span>
+              <span class="accordion-sub">Depth, specularity &amp; star highlights</span>
+            </div>
+          </div>
+          <div class="accordion-meta">
+            <span class="accordion-badge" id="effectsSummaryBadge">75% • 80% Bright</span>
+            <svg class="chevron-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </div>
+        </button>
+
+        <div class="accordion-body" id="accordionEffectsBody">
+          <!-- 6. Glitter Intensity -->
+          <div class="slider-subgroup">
+            <div class="slider-label-row">
+              <div class="slider-label-wrap">
+                <span class="sub-label">Glitter Intensity</span>
+                <span class="slider-val" id="intensityValueBadge">75%</span>
+              </div>
+              <div class="intensity-presets" id="intensityPresets">
+                <button type="button" class="btn-intensity-preset" data-intensity="25" title="Set subtle 25% glitter intensity">Low</button>
+                <button type="button" class="btn-intensity-preset" data-intensity="65" title="Set balanced 65% glitter intensity">Med</button>
+                <button type="button" class="btn-intensity-preset" data-intensity="100" title="Set high 100% specular glitter intensity">High</button>
+              </div>
+            </div>
+            <div class="slider-container">
+              <input type="range" id="intensitySlider" min="0" max="100" step="1" value="75" aria-label="Glitter intensity percentage" title="Adjust depth, shadow contrast and glitter flake intensity (0%–100%)">
+            </div>
+          </div>
+
+          <!-- 8. Sparkle Brightness -->
+          <div class="slider-subgroup">
+            <div class="slider-label-row">
+              <span class="sub-label">Sparkle Brightness</span>
+              <span class="slider-val" id="brightnessValueBadge">80%</span>
+            </div>
+            <div class="slider-container">
+              <input type="range" id="brightnessSlider" min="0" max="100" step="1" value="80" aria-label="Sparkle brightness percentage" title="Adjust specular reflection and star glint brightness (0%–100%)">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 3: Particle Density & Animation (Items 7, 9 & 10) -->
+      <section class="accordion-card" id="accordionMotionCard">
+        <button type="button" class="accordion-header" id="accordionMotionHeader" aria-expanded="false">
+          <div class="accordion-title-wrap">
+            <span class="accordion-icon">🎬</span>
+            <div class="accordion-titles">
+              <span class="accordion-title">Density &amp; Motion</span>
+              <span class="accordion-sub">Flake spread, shimmer switch &amp; speed</span>
+            </div>
+          </div>
+          <div class="accordion-meta">
+            <span class="accordion-badge" id="motionSummaryBadge">Normal • 5.5s</span>
+            <svg class="chevron-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </div>
+        </button>
+
+        <div class="accordion-body" id="accordionMotionBody">
+          <!-- 7. Particle Density Selector -->
+          <div class="segment-subgroup">
+            <span class="sub-label">Particle Density</span>
+            <div class="segment-selector" id="densitySelector" role="radiogroup" aria-label="Particle density">
+              <button type="button" class="segment-btn" data-density="sparse" role="radio" aria-checked="false" title="Sparse: Larger flakes with open negative space">
+                <span class="segment-title">Sparse</span>
+                <span class="segment-desc">Open flakes</span>
+              </button>
+              <button type="button" class="segment-btn active" data-density="normal" role="radio" aria-checked="true" title="Normal: Balanced realistic glitter distribution">
+                <span class="segment-title">Normal</span>
+                <span class="segment-desc">Balanced</span>
+              </button>
+              <button type="button" class="segment-btn" data-density="dense" role="radio" aria-checked="false" title="Dense: Micro-faceted high frequency glitter dust">
+                <span class="segment-title">Dense</span>
+                <span class="segment-desc">Micro-dust</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 10. Shimmer Animation ON/OFF -->
+          <div class="anim-switch-row">
+            <div class="anim-switch-info">
+              <span class="sub-label">Shimmer Animation</span>
+              <span class="anim-subtext" id="animStatusText">Active shimmering sweep</span>
+            </div>
+            <label class="luxury-mini-switch" for="animationToggle" aria-label="Toggle shimmer animation" title="Toggle active specular shimmering sweep ON or OFF">
+              <input type="checkbox" id="animationToggle" checked>
+              <span class="mini-slider"></span>
+            </label>
+          </div>
+
+          <!-- 9. Animation Speed Selector -->
+          <div class="segment-subgroup" id="speedSubgroup">
+            <span class="sub-label">Animation Speed</span>
+            <div class="segment-selector" id="speedSelector" role="radiogroup" aria-label="Animation speed">
+              <button type="button" class="segment-btn" data-speed="slow" role="radio" aria-checked="false" title="Slow: Elegant 8.5s specular sweep">
+                <span class="segment-title">Slow</span>
+                <span class="segment-desc">8.5s</span>
+              </button>
+              <button type="button" class="segment-btn active" data-speed="normal" role="radio" aria-checked="true" title="Normal: Balanced 5.5s specular sweep">
+                <span class="segment-title">Normal</span>
+                <span class="segment-desc">5.5s</span>
+              </button>
+              <button type="button" class="segment-btn" data-speed="fast" role="radio" aria-checked="false" title="Fast: Lively 3.0s specular sweep">
+                <span class="segment-title">Fast</span>
+                <span class="segment-desc">3.0s</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 4: Text Size Scaling (Item 3) -->
+      <section class="accordion-card" id="accordionSizeCard">
+        <button type="button" class="accordion-header" id="accordionSizeHeader" aria-expanded="false">
+          <div class="accordion-title-wrap">
+            <span class="accordion-icon">🔤</span>
+            <div class="accordion-titles">
+              <span class="accordion-title">Text Size</span>
+              <span class="accordion-sub">Non-destructive scaling (10px–50px)</span>
+            </div>
+          </div>
+          <div class="accordion-meta">
+            <span class="accordion-badge" id="sizeSummaryBadge">16px</span>
+            <svg class="chevron-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </div>
+        </button>
+
+        <div class="accordion-body" id="accordionSizeBody">
+          <div class="stepper-row">
+            <button type="button" class="btn-step" id="btnDecreaseSize" aria-label="Decrease text size" title="Decrease text size by 1px">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+            </button>
+
+            <div class="slider-container">
+              <input type="range" id="textSizeSlider" min="10" max="50" step="1" value="16" aria-label="Text size in pixels" title="Scale readable webpage text from 10px to 50px">
+            </div>
+
+            <button type="button" class="btn-step" id="btnIncreaseSize" aria-label="Increase text size" title="Increase text size by 1px">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+            </button>
+          </div>
+
+          <div class="control-footer">
+            <span class="range-bound">Min 10px</span>
+            <span class="size-badge" id="sizeValueBadge">16px</span>
+            <button type="button" class="btn-reset" id="btnResetSize" title="Restore original native webpage text sizes">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                <path d="M3 3v5h5"/>
+              </svg>
+              Reset Size
+            </button>
+            <span class="range-bound">Max 50px</span>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- 12. Dashboard Footer Actions: Reset to Default Settings -->
+    <div class="dashboard-footer-actions">
+      <button type="button" class="btn-reset-all-defaults" id="btnResetAllDefaults" title="Restore all original defaults">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+          <path d="M3 3v5h5"/>
+        </svg>
+        Reset to Default Settings
+      </button>
+    </div>
+
+    <!-- Active Webpage Bar -->
+    <section class="tab-status-card">
+      <div class="tab-status-header">
+        <span class="tab-status-label">Active Webpage</span>
+        <span class="tab-indicator" id="tabStatusIndicator">Monitoring</span>
+      </div>
+      <div class="tab-url-text" id="tabUrlText">Loading current page...</div>
+    </section>
+
+    <!-- Safety Guarantee -->
+    <footer class="safety-footer">
+      <svg class="shield-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      </svg>
+      <span>Non-destructive: Preserves font family, weight, images &amp; layouts.</span>
+    </footer>
+  </div>
+
+  <!-- Shared Configuration & Popup Logic -->
+  <script src="../shared/config.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

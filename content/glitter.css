@@ -1,0 +1,234 @@
+/**
+ * GlitterText Extension - Dedicated Glitter Typography Stylesheet
+ * 
+ * Recreates authentic gold glitter particles embedded inside text letters.
+ * 
+ * Visual architecture:
+ * 1. Multi-layered stochastic repeating radial gradients simulating varied particle sizes,
+ *    densities, and specular brightness levels.
+ * 2. Prime-number tile geometry preventing repetitive patterning.
+ * 3. Multi-stop 24K metallic gold leaf foil underlay.
+ * 4. Micro-stroke and subtle ambient drop-shadow for crisp legibility on both dark & white backgrounds.
+ * 5. Smooth, elegant specular shimmer animation.
+ * 6. Strictly non-destructive: zero font-family/weight/layout/image/background overrides.
+ * 7. Inactive when the extension toggle is OFF.
+ */
+
+/* ==========================================================================
+   Glitter Particle Typography Engine
+   Scoped strictly under .glitter-text-active
+   ========================================================================== */
+
+.glitter-text-active .glitter-text-applied {
+  /* Retain all native typography properties: font-family, font-weight, font-style */
+  /* DO NOT set display: inline! Preserves native block, inline-block, flex, grid layouts */
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  
+  /* Text clipping */
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  color: transparent !important;
+
+  /* Crisp boundary for legibility across both dark and bright white backgrounds */
+  -webkit-text-stroke: 0.35px rgba(110, 68, 0, 0.45);
+  filter: drop-shadow(0 0 0.8px rgba(90, 50, 0, 0.55)) drop-shadow(0 0 3px rgba(230, 175, 30, 0.25));
+
+  /* Multi-layered Particle Gradient Stack:
+     - Layer 1: Fine diamond sparkle dust (0.5px - 1px)
+     - Layer 2: Micro gold glitter flecks (1px - 1.8px)
+     - Layer 3: Medium metallic flakes (1.8px - 2.5px)
+     - Layer 4: Deep amber shadow facets (creates particle depth & grit)
+     - Layer 5: Brilliant specular star glints (2.5px - 3.5px)
+     - Layer 6: Rich 24K metallic gold foil gradient
+  */
+  background-image:
+    /* Layer 1: Fine diamond sparkle dust (pinpoint bright specular reflections) */
+    repeating-radial-gradient(circle at 1.5px 2px, #ffffff 0px, #fff8d4 0.6px, transparent 1.2px),
+    repeating-radial-gradient(circle at 6.5px 5.5px, #ffffff 0px, #ffe885 0.7px, transparent 1.4px),
+
+    /* Layer 2: Micro gold glitter flecks (dense golden grains) */
+    repeating-radial-gradient(circle at 11px 8px, #fff6c7 0px, #f2b51d 1px, transparent 2px),
+    repeating-radial-gradient(circle at 3.5px 12px, #ffdf70 0px, #d68f08 1.2px, transparent 2.4px),
+
+    /* Layer 3: Deep amber/bronze shadow facets (simulates micro-cavities between flakes) */
+    repeating-radial-gradient(circle at 13px 3px, rgba(135, 70, 0, 0.85) 0px, rgba(70, 32, 0, 0.7) 1.4px, transparent 2.8px),
+    repeating-radial-gradient(circle at 8px 16px, rgba(95, 45, 0, 0.8) 0px, rgba(50, 20, 0, 0.6) 1.6px, transparent 3.2px),
+
+    /* Layer 4: Brilliant specular star glints (scattered high-intensity sparkles) */
+    repeating-radial-gradient(circle at 18px 22px, #ffffff 0px, #fffceb 0.9px, rgba(255, 215, 0, 0.65) 2.2px, transparent 4px),
+
+    /* Layer 5: Rich 24K metallic gold foil gradient underlay */
+    linear-gradient(
+      135deg,
+      #be8914 0%,
+      #fef3b4 12%,
+      #d99c1e 24%,
+      #fffbe0 36%,
+      #b07306 48%,
+      #fae692 60%,
+      #e2a828 72%,
+      #fff8d6 84%,
+      #945c02 100%
+    ) !important;
+
+  /* Co-prime repeat dimensions: prevents repetitive grid artifacts */
+  background-size:
+    11px 13px,
+    17px 19px,
+    23px 29px,
+    19px 23px,
+    31px 37px,
+    29px 31px,
+    41px 43px,
+    260% 260% !important;
+
+  /* Specular shimmer animation */
+  animation: glitterParticleShimmer 5.5s ease-in-out infinite alternate !important;
+  /* Hardware-accelerated shimmer with clean filter transitions (font-size transitions removed to eliminate reflow lag) */
+  will-change: background-position;
+  transition: filter 0.2s ease;
+}
+
+/* ==========================================================================
+   Avoid Duplicate Effects on Nested Elements
+   When a parent text element is already tagged, child tags inherit smoothly
+   without stacking extra backgrounds, strokes, filters, or animations.
+   ========================================================================== */
+.glitter-text-active .glitter-text-applied .glitter-text-applied {
+  background-image: none !important;
+  -webkit-text-stroke: 0 !important;
+  filter: none !important;
+  animation: none !important;
+  -webkit-background-clip: unset !important;
+  background-clip: unset !important;
+  -webkit-text-fill-color: inherit !important;
+  color: inherit !important;
+}
+
+/* ==========================================================================
+   Strict Non-Text Protection: Images, SVGs, Icons, Media & Canvas
+   Preserves 100% native rendering for icons, avatars, and visual media
+   ========================================================================== */
+.glitter-text-active svg,
+.glitter-text-active img,
+.glitter-text-active picture,
+.glitter-text-active canvas,
+.glitter-text-active video,
+.glitter-text-active audio,
+.glitter-text-active iframe,
+.glitter-text-active [role="img"],
+.glitter-text-active .material-icons,
+.glitter-text-active .fa,
+.glitter-text-active [class*="icon"],
+.glitter-text-active [class*="avatar"],
+.glitter-text-active .mwe-math-element,
+.glitter-text-active math {
+  -webkit-text-fill-color: initial !important;
+  color: initial;
+  background-image: none !important;
+  -webkit-background-clip: border-box !important;
+  background-clip: border-box !important;
+  filter: none !important;
+}
+
+/* ==========================================================================
+   Strict Form & Editable Content Protection
+   Preserves typing cursors, form inputs, Gmail compose, social media comment boxes
+   ========================================================================== */
+.glitter-text-active input,
+.glitter-text-active textarea,
+.glitter-text-active select,
+.glitter-text-active [contenteditable="true"],
+.glitter-text-active [role="textbox"],
+.glitter-text-active [role="combobox"],
+.glitter-text-active .editable,
+.glitter-text-active [g_editable="true"],
+.glitter-text-active .kix-appview {
+  -webkit-text-fill-color: initial !important;
+  color: initial !important;
+  background-image: none !important;
+  -webkit-background-clip: border-box !important;
+  background-clip: border-box !important;
+  filter: none !important;
+}
+
+/* ==========================================================================
+   Code & Technical Syntax Protection
+   Preserves monospace code blocks, preformatted text, terminal outputs
+   ========================================================================== */
+.glitter-text-active pre,
+.glitter-text-active code,
+.glitter-text-active kbd,
+.glitter-text-active samp,
+.glitter-text-active var,
+.glitter-text-active .hljs,
+.glitter-text-active [class*="highlight"] {
+  -webkit-text-fill-color: initial !important;
+  color: initial !important;
+  background-image: none !important;
+  -webkit-background-clip: border-box !important;
+  background-clip: border-box !important;
+  filter: none !important;
+}
+
+/* ==========================================================================
+   Smooth, Elegant Specular Shimmer Keyframes
+   ========================================================================== */
+@keyframes glitterParticleShimmer {
+  0% {
+    background-position:
+      0px 0px,
+      0px 0px,
+      0px 0px,
+      0px 0px,
+      0px 0px,
+      0px 0px,
+      0px 0px,
+      0% 50%;
+  }
+  50% {
+    background-position:
+      5px 7px,
+      -8px 10px,
+      12px -14px,
+      -10px 12px,
+      15px -18px,
+      -14px 15px,
+      20px -21px,
+      100% 50%;
+  }
+  100% {
+    background-position:
+      11px 13px,
+      -17px 19px,
+      23px -29px,
+      -19px 23px,
+      31px -37px,
+      -29px 31px,
+      41px -43px,
+      0% 50%;
+  }
+}
+
+/* ==========================================================================
+   Link and Interactive States
+   Ensure links with glitter remain visibly interactive on hover
+   ========================================================================== */
+.glitter-text-active a.glitter-text-applied:hover {
+  filter: drop-shadow(0 0 1.2px rgba(255, 235, 120, 0.8)) drop-shadow(0 0 5px rgba(230, 175, 30, 0.45));
+}
+
+.glitter-text-active button.glitter-text-applied:hover {
+  filter: drop-shadow(0 0 1.2px rgba(255, 235, 120, 0.8)) drop-shadow(0 0 4px rgba(230, 175, 30, 0.4));
+}
+
+/* ==========================================================================
+   Accessibility: Prefers-Reduced-Motion
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .glitter-text-active .glitter-text-applied {
+    animation: none !important;
+  }
+}

@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GlitterText Extension - Custom Colour &amp; Blend Test Suite</title>
+  <style>
+    :root {
+      --bg: #0b0d14;
+      --card-bg: #121524;
+      --surface-bg: #191e32;
+      --text: #e6e8f2;
+      --text-muted: #8e95ac;
+      --accent: #e5b842;
+      --border: rgba(255, 255, 255, 0.08);
+      --border-accent: rgba(229, 184, 66, 0.3);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      padding: 36px 20px;
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 840px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .hero {
+      text-align: center;
+      padding: 28px 20px;
+      background: var(--card-bg);
+      border-radius: 16px;
+      border: 1px solid var(--border);
+    }
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      padding: 4px 12px;
+      border-radius: 99px;
+      background: rgba(229, 184, 66, 0.15);
+      color: var(--accent);
+      margin-bottom: 12px;
+      font-weight: 700;
+      border: 1px solid var(--border-accent);
+    }
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      letter-spacing: -0.5px;
+      font-weight: 800;
+    }
+    h2 {
+      font-size: 1.7rem;
+      margin-top: 14px;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+    h3 {
+      font-size: 1.25rem;
+      margin-top: 10px;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+    p {
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+
+    /* Live Telemetry Bar */
+    .telemetry-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 18px;
+      background: var(--surface-bg);
+      border: 1px solid var(--border-accent);
+      border-radius: 12px;
+      font-size: 12.5px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .telemetry-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .status-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #718093;
+      transition: all 0.3s ease;
+    }
+    .status-dot.active {
+      background: var(--accent);
+      box-shadow: 0 0 10px var(--accent);
+    }
+    .val-highlight {
+      color: var(--accent);
+      font-weight: 700;
+      font-family: monospace;
+    }
+
+    /* Testing Checklist Grid */
+    .test-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    @media (max-width: 680px) {
+      .test-grid { grid-template-columns: 1fr; }
+    }
+    .test-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+    }
+    .test-card h4 {
+      font-size: 13.5px;
+      color: var(--accent);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .test-card ol, .test-card ul {
+      padding-left: 20px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .test-card li { margin-bottom: 4px; }
+
+    /* Sandbox Cards */
+    .sandbox-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .sandbox-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--accent);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+    }
+
+    /* Backgrounds Comparison Test Grid */
+    .bg-test-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+    @media (max-width: 720px) {
+      .bg-test-grid { grid-template-columns: 1fr; }
+    }
+    .bg-box {
+      border-radius: 10px;
+      padding: 18px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .bg-dark {
+      background-color: #0b0d14;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #f0f2f8;
+    }
+    .bg-medium {
+      background-color: #2b3145;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+    }
+    .bg-light {
+      background-color: #ffffff;
+      border: 1px solid #dcdde1;
+      color: #1e272e;
+    }
+    .bg-label {
+      font-size: 10.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      opacity: 0.75;
+      margin-bottom: 2px;
+    }
+
+    /* Interactive Elements */
+    .interactive-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .sample-btn {
+      background: var(--surface-bg);
+      border: 1px solid var(--border-accent);
+      color: var(--text);
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+    .sample-btn:hover {
+      background: rgba(229, 184, 66, 0.15);
+    }
+    .sample-link {
+      color: var(--accent);
+      text-decoration: underline;
+      font-weight: 500;
+    }
+
+    .sample-list {
+      padding-left: 22px;
+      color: var(--text-muted);
+    }
+    .sample-list li { margin-bottom: 4px; }
+
+    .quote-box {
+      border-left: 3px solid var(--accent);
+      padding: 12px 18px;
+      background: rgba(229, 184, 66, 0.04);
+      border-radius: 0 8px 8px 0;
+      font-style: italic;
+    }
+
+    /* Protected Assets Section */
+    .protected-section {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .protected-grid {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .image-placeholder {
+      width: 110px;
+      height: 70px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #2a2e45 0%, #171a29 100%);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    pre {
+      background: #080a10;
+      padding: 12px;
+      border-radius: 8px;
+      font-family: Consolas, monospace;
+      font-size: 12px;
+      color: #9cdcfe;
+      overflow-x: auto;
+      border: 1px solid var(--border);
+    }
+
+    /* Dynamic Content Adder */
+    .dynamic-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .btn-action {
+      background: linear-gradient(135deg, #fff5c0 0%, #e5b842 50%, #b8831a 100%);
+      color: #0b0d14;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    #dynamicContainer {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    /* Major Sites Compatibility Mockups */
+    .mock-site-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .mock-site-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+    }
+    .mock-site-name {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .mock-badge-safe {
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 99px;
+      background: rgba(46, 213, 115, 0.15);
+      color: #2ed573;
+      border: 1px solid rgba(46, 213, 115, 0.3);
+      font-weight: 600;
+    }
+
+    /* YouTube simulation */
+    .yt-mock-row {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .yt-subscribe-btn {
+      background-color: #cc0000;
+      color: #ffffff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 12.5px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+    .yt-comment-box {
+      background: var(--surface-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      color: #ffffff;
+      min-height: 38px;
+      font-size: 13px;
+      outline: none;
+      width: 100%;
+    }
+    .yt-comment-box:focus {
+      border-color: var(--accent);
+    }
+
+    /* Google Search simulation */
+    .google-search-mock {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .google-result-title {
+      font-size: 18px;
+      color: #8ab4f8;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+    .google-snippet {
+      font-size: 13px;
+      color: #bdc1c6;
+      line-height: 1.5;
+    }
+    .google-search-input {
+      background: #202124;
+      border: 1px solid #5f6368;
+      border-radius: 24px;
+      padding: 8px 16px;
+      color: #ffffff;
+      font-size: 13px;
+      outline: none;
+      width: 100%;
+      max-width: 320px;
+    }
+
+    /* Gmail simulation */
+    .gmail-mock {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .gmail-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      background: var(--surface-bg);
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      font-size: 12.5px;
+    }
+    .gmail-sender { font-weight: 700; width: 110px; flex-shrink: 0; }
+    .gmail-subject { color: var(--text); flex: 1; }
+    .gmail-compose-box {
+      border: 1px solid var(--border-accent);
+      border-radius: 8px;
+      padding: 10px;
+      background: #0d0f17;
+      min-height: 50px;
+      font-size: 12.5px;
+      outline: none;
+    }
+
+    /* Wikipedia simulation */
+    .wiki-mock {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .wiki-h1 {
+      font-size: 22px;
+      font-weight: 700;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 4px;
+    }
+    .wiki-math {
+      display: inline-flex;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin: 0 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="hero">
+      <span class="badge">Advanced Intensity &amp; Animation Verification</span>
+      <h1>LUXURY CUSTOM GLITTER</h1>
+      <p>Test particle density (Sparse/Normal/Dense), intensity (0–100%), sparkle brightness, shimmer animation switch, and speed (Slow/Normal/Fast).</p>
+    </div>
+
+    <!-- Live Telemetry & Computed Font-Size Monitor -->
+    <div class="telemetry-bar">
+      <div class="telemetry-item">
+        <span class="status-dot" id="monitorDot"></span>
+        <span>Extension: <strong id="monitorState">OFF</strong></span>
+      </div>
+      <div class="telemetry-item">
+        <span>Glitter Elements: <span class="val-highlight" id="targetCount">0</span></span>
+      </div>
+      <div class="telemetry-item">
+        <span>H1 Font Size: <span class="val-highlight" id="h1Size">--</span></span>
+      </div>
+      <div class="telemetry-item">
+        <span>P Font Size: <span class="val-highlight" id="pSize">--</span></span>
+      </div>
+      <div class="telemetry-item">
+        <span>Shimmer: <span class="val-highlight" id="animState">--</span></span>
+      </div>
+    </div>
+
+    <!-- Testing Instructions Cards -->
+    <div class="test-grid">
+      <div class="test-card">
+        <h4>🎨 Test 1: Native Colour Picker</h4>
+        <ol>
+          <li>Ensure Global Toggle is <strong>ON</strong>.</li>
+          <li>Click the <strong>Primary</strong> colour picker circle in the popup.</li>
+          <li>Pick any custom colour (e.g. Electric Cyan, Bright Orange, Lime Green).</li>
+          <li>Observe the glitter on this webpage update <strong>immediately</strong> without refreshing!</li>
+        </ol>
+      </div>
+
+      <div class="test-card">
+        <h4>✨ Test 2: 2 &amp; 3-Colour Blending</h4>
+        <ol>
+          <li>Click the <strong>2 Blend</strong> tab &mdash; pick two contrasting colours (e.g. Gold + Emerald).</li>
+          <li>Observe particles of both colours interleave with diamond sparkle highlights.</li>
+          <li>Click <strong>3 Blend</strong> &mdash; pick three colours (e.g. Ruby + Gold + Royal Blue).</li>
+          <li>Click <strong>Rainbow</strong> &mdash; verify full chromatic spectrum glitter!</li>
+        </ol>
+      </div>
+
+      <div class="test-card">
+        <h4>⭐ Test 3: Save Favourites &amp; Reset</h4>
+        <ol>
+          <li>With your favourite blend selected, click <strong>★ Save Favourite</strong>.</li>
+          <li>Enter a name (e.g. "My Sunset Blend") &mdash; verify it appears in the favourites chips.</li>
+          <li>Switch to another preset, then click your favourite chip to re-apply it instantly.</li>
+          <li>Click <strong>↺ Default Gold</strong> &mdash; verify it restores 24K Classic Gold.</li>
+        </ol>
+      </div>
+
+      <div class="test-card">
+        <h4>🛡️ Test 4: Text-Size &amp; Zero-Trace OFF</h4>
+        <ol>
+          <li>Move the text-size slider between <strong>10px and 50px</strong>.</li>
+          <li>Verify custom colours remain embedded in the resized letters.</li>
+          <li>Turn Global Toggle <strong>OFF</strong> &mdash; verify all glitter and font-size overrides are removed.</li>
+          <li>Verify images, code blocks, and container layouts remain 100% untouched.</li>
+        </ol>
+      </div>
+
+      <div class="test-card">
+        <h4>✨ Test 5: Intensity &amp; Sparkle Brightness</h4>
+        <ol>
+          <li>Drag the <strong>Glitter Intensity</strong> slider from 0% to 100%.</li>
+          <li>Click the quick presets: <strong>Low (25%)</strong>, <strong>Med (65%)</strong>, <strong>High (100%)</strong>.</li>
+          <li>Drag the <strong>Sparkle Brightness</strong> slider from 0% to 100% to control specular diamond glints.</li>
+          <li>Observe particle depth, contrast, and star highlight intensities change in real time.</li>
+        </ol>
+      </div>
+
+      <div class="test-card">
+        <h4>🎬 Test 6: Density &amp; Animation Speed</h4>
+        <ol>
+          <li>Switch <strong>Particle Density</strong>: <em>Sparse</em> (open flakes), <em>Normal</em> (balanced), <em>Dense</em> (tight micro-dust).</li>
+          <li>Toggle <strong>Shimmer Animation OFF</strong>: verify physical glitter texture remains static inside letters without moving.</li>
+          <li>Toggle <strong>Shimmer Animation ON</strong>: verify smooth light sweep resumes.</li>
+          <li>Test <strong>Animation Speed</strong>: <em>Slow (8.5s)</em>, <em>Normal (5.5s)</em>, and <em>Fast (3.0s)</em>.</li>
+        </ol>
+      </div>
+
+      <div class="test-card">
+        <h4>🗂️ Test 7: Collapsible Dashboard &amp; Master Reset</h4>
+        <ol>
+          <li>Click the headers of <strong>Colour &amp; Blending</strong>, <strong>Intensity &amp; Sparkle</strong>, <strong>Density &amp; Motion</strong>, and <strong>Text Size</strong> to expand/collapse them smoothly.</li>
+          <li>Observe the live summary badges on each header updating dynamically as you tweak settings.</li>
+          <li>Look for the <strong>✓ Settings Saved</strong> feedback toast whenever any control changes.</li>
+          <li>Click <strong>↺ Reset to Default Settings</strong> at the bottom of the dashboard: verify all settings restore to factory defaults with instant multi-tab sync.</li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- Multi-Background Contrast Test Sandbox -->
+    <section class="sandbox-card">
+      <div class="sandbox-title">Multi-Background Contrast &amp; Legibility Verification</div>
+      <div class="bg-test-grid">
+        <!-- Dark Background -->
+        <div class="bg-box bg-dark">
+          <span class="bg-label">Dark Background</span>
+          <h2>Obsidian Surface</h2>
+          <p>Particles reflect bright highlights with warm amber micro-cavities.</p>
+        </div>
+
+        <!-- Medium Background -->
+        <div class="bg-box bg-medium">
+          <span class="bg-label">Medium Slate Background</span>
+          <h2>Neutral Slate</h2>
+          <p>Crisp boundary edges ensure perfect legibility on grey surfaces.</p>
+        </div>
+
+        <!-- Pure White Background -->
+        <div class="bg-box bg-light">
+          <span class="bg-label" style="color: #636e72;">Pure White Background</span>
+          <h2>Pure White</h2>
+          <p style="color: #2d3436;">High-contrast boundary stroke prevents washout on white.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interactive Typography Elements Sandbox -->
+    <section class="sandbox-card">
+      <div class="sandbox-title">Interactive Readable Typography Sandbox</div>
+      
+      <h1 id="testH1">Headline 1: Editorial Custom Glitter Typography</h1>
+      <h2 id="testH2">Headline 2: Multi-Colour Blended Flakes &amp; Shimmer</h2>
+      <h3 id="testH3">Headline 3: Proportional Hierarchy &amp; Specular Facets</h3>
+
+      <p id="testP">
+        Paragraph text: Notice that custom chosen and blended glitter particles are visible inside every single character.
+        The underlying <strong>font family remains native</strong>, <em>font style is preserved</em>, and container layouts are completely untouched.
+      </p>
+
+      <div class="interactive-row">
+        <button type="button" class="sample-btn" id="testButton">Interactive Glitter Button</button>
+        <a href="#test" class="sample-link" id="testLink">Sample Glitter Hyperlink</a>
+      </div>
+
+      <ul class="sample-list">
+        <li>Bullet list item one embedded with custom glitter particles</li>
+        <li>Bullet list item two demonstrating multi-colour blending and shimmer</li>
+        <li>Bullet list item three confirming non-destructive formatting</li>
+      </ul>
+
+      <div class="quote-box">
+        <blockquote>"Color is a power which directly influences the soul." &mdash; Wassily Kandinsky</blockquote>
+      </div>
+    </section>
+
+    <!-- Protected Non-Text Elements -->
+    <section class="protected-section">
+      <div class="sandbox-title">Protected Elements (Must NEVER be modified)</div>
+      <p style="font-size: 12px; color: var(--text-muted);">
+        The following assets (images, icons, SVGs, code blocks) must remain completely unaffected:
+      </p>
+
+      <div class="protected-grid">
+        <div class="image-placeholder">Sample Image</div>
+        
+        <!-- SVG Asset -->
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="var(--accent)">
+          <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+        </svg>
+
+        <!-- Pre / Code element -->
+        <pre><code>const safe = { glitter: 'custom-blended', layout: 'untouched' };</code></pre>
+      </div>
+    </section>
+
+    <!-- Nested Elements Anti-Duplication Verification Sandbox -->
+    <section class="mock-site-card">
+      <div class="mock-site-header">
+        <span class="mock-site-name">🔍 Nested Elements Anti-Duplication Guard</span>
+        <span class="mock-badge-safe">Verified No Duplicate Clipping</span>
+      </div>
+      <p style="font-size: 12.5px; color: var(--text-muted);">
+        The paragraph below contains nested &lt;span&gt;, &lt;strong&gt;, and &lt;a&gt; tags. Only the single parent text container receives the glitter background-clip. Child tags inherit transparency smoothly without stacking duplicate gradients or desynchronized animations:
+      </p>
+      <p style="font-size: 15px; background: rgba(229,184,66,0.03); padding: 12px; border-radius: 8px; border: 1px dashed rgba(229,184,66,0.2);">
+        Main editorial text with <span style="font-style: italic;">nested italic phrase</span>, followed by a <strong>strongly emphasized statement</strong> and a <a href="#test" class="sample-link">nested hyperlink anchor</a> inside one continuous stream.
+      </p>
+    </section>
+
+    <!-- Google Search Simulation -->
+    <section class="mock-site-card">
+      <div class="mock-site-header">
+        <span class="mock-site-name">🔍 Google Search Compatibility Test</span>
+        <span class="mock-badge-safe">Search Box &amp; Icons Protected</span>
+      </div>
+      <div class="google-search-mock">
+        <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 6px;">
+          <input type="text" class="google-search-input" value="luxury gold typography chrome extension" readonly aria-label="Search box">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        </div>
+        <span style="font-size: 11px; color: #9aa0a6;">https://chrome.google.com &rsaquo; webstore &rsaquo; glittertext</span>
+        <h3 class="google-result-title">GlitterText: Authentic Metallic Glitter Typography Engine</h3>
+        <p class="google-snippet">Transform readable web typography with realistic sparkling particle physics, metallic foil underlay, 9 curated presets and proportional text-size scaling.</p>
+      </div>
+    </section>
+
+    <!-- YouTube Simulation -->
+    <section class="mock-site-card">
+      <div class="mock-site-header">
+        <span class="mock-site-name">▶️ YouTube Video &amp; Comments Compatibility Test</span>
+        <span class="mock-badge-safe">Video Player &amp; Red Button Preserved</span>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <!-- Simulated Video Container -->
+        <div style="width: 100%; height: 110px; background: #000000; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #718093; font-size: 12px; border: 1px solid var(--border);">
+          ▶ Simulated YouTube HTML5 Video Player (Protected: zero visual overrides)
+        </div>
+        <div class="yt-mock-row">
+          <h3 style="font-size: 16px; margin: 0; flex: 1;">Luxury Particle Shimmer Typography Masterclass 2026</h3>
+          <button type="button" class="yt-subscribe-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+            <span>Subscribe</span>
+          </button>
+        </div>
+        <div>
+          <span style="font-size: 11px; color: var(--text-dim); display: block; margin-bottom: 4px;">Comment as GlitterFan (contenteditable input protected):</span>
+          <div class="yt-comment-box" contenteditable="true" role="textbox">Add a public comment... (typing cursor &amp; native text fully functional)</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Gmail Simulation -->
+    <section class="mock-site-card">
+      <div class="mock-site-header">
+        <span class="mock-site-name">✉️ Gmail Message &amp; Compose Compatibility Test</span>
+        <span class="mock-badge-safe">Compose Box &amp; Icons Untouched</span>
+      </div>
+      <div class="gmail-mock">
+        <div class="gmail-row">
+          <span style="color: #f1c40f;">★</span>
+          <span class="gmail-sender">Google DeepMind</span>
+          <span class="gmail-subject">Your new GlitterText extension passed compatibility testing!</span>
+          <span style="color: var(--text-dim); font-size: 11px;">10:24 AM</span>
+        </div>
+        <span style="font-size: 11px; color: var(--text-dim);">Simulated Compose Window (contenteditable):</span>
+        <div class="gmail-compose-box" contenteditable="true" role="textbox">
+          Dear Team,<br>Here is the project update. Native text color, caret selection and keyboard editing work perfectly.
+        </div>
+      </div>
+    </section>
+
+    <!-- Wikipedia & Math Simulation -->
+    <section class="mock-site-card">
+      <div class="mock-site-header">
+        <span class="mock-site-name">📖 Wikipedia &amp; Educational Sites Compatibility Test</span>
+        <span class="mock-badge-safe">Math Equations &amp; Citations Safe</span>
+      </div>
+      <div class="wiki-mock">
+        <h1 class="wiki-h1">Gold leaf &mdash; Wikipedia</h1>
+        <p style="font-size: 13px; line-height: 1.6; color: var(--text);">
+          Gold leaf is gold that has been hammered into thin sheets by goldbeating and is often used for gilding.<sup style="color: var(--accent);">[1]</sup>
+          The physical reflectivity of metallic particles is described by the Fresnel reflectance formula:
+          <span class="wiki-math mwe-math-element">
+            <svg width="90" height="24" viewBox="0 0 90 24" fill="none"><text x="5" y="16" fill="var(--accent)" font-family="serif" font-size="13">R = ((n-1)/(n+1))²</text></svg>
+          </span>
+          where n denotes the refractive index of the medium.<sup style="color: var(--accent);">[2]</sup>
+        </p>
+      </div>
+    </section>
+
+    <!-- Dynamic SPA Content Injector -->
+    <section class="sandbox-card">
+      <div class="sandbox-title">Dynamic SPA Content Test</div>
+      <div class="dynamic-actions">
+        <button type="button" class="btn-action" id="btnAddDynamic">+ Add Dynamic Text</button>
+        <span style="font-size: 12px; color: var(--text-muted);">Simulates React/Vue dynamic insertions</span>
+      </div>
+      <div id="dynamicContainer"></div>
+    </section>
+  </div>
+
+  <!-- Telemetry Update Script -->
+  <script>
+    (function () {
+      const monitorDot = document.getElementById('monitorDot');
+      const monitorState = document.getElementById('monitorState');
+      const h1Size = document.getElementById('h1Size');
+      const pSize = document.getElementById('pSize');
+      const targetCount = document.getElementById('targetCount');
+      const animState = document.getElementById('animState');
+      const btnAddDynamic = document.getElementById('btnAddDynamic');
+      const dynamicContainer = document.getElementById('dynamicContainer');
+
+      let dynamicCounter = 0;
+
+      function updateTelemetry() {
+        const isActive = document.documentElement.classList.contains('glitter-text-active');
+        const testH1 = document.getElementById('testH1');
+        const testP = document.getElementById('testP');
+        const glitterElements = document.querySelectorAll('.glitter-text-applied');
+
+        if (isActive) {
+          monitorDot.classList.add('active');
+          monitorState.textContent = 'ON (Glitter Active)';
+          monitorState.style.color = '#e5b842';
+        } else {
+          monitorDot.classList.remove('active');
+          monitorState.textContent = 'OFF (Original)';
+          monitorState.style.color = '#8e95ac';
+        }
+
+        if (testH1) {
+          h1Size.textContent = Math.round(parseFloat(getComputedStyle(testH1).fontSize)) + 'px';
+          const anim = getComputedStyle(testH1).animationName;
+          const duration = getComputedStyle(testH1).animationDuration;
+          if (anim && anim !== 'none' && isActive) {
+            animState.textContent = `Active (${duration})`;
+            animState.style.color = '#00b894';
+          } else if (isActive) {
+            animState.textContent = 'Static (Texture Only)';
+            animState.style.color = '#e5b842';
+          } else {
+            animState.textContent = 'OFF';
+            animState.style.color = '#8e95ac';
+          }
+        }
+        if (testP) pSize.textContent = Math.round(parseFloat(getComputedStyle(testP).fontSize)) + 'px';
+        targetCount.textContent = glitterElements.length;
+      }
+
+      // Track DOM mutations
+      const observer = new MutationObserver(updateTelemetry);
+      observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+      observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['style', 'class'] });
+
+      // Add dynamic elements
+      btnAddDynamic.addEventListener('click', () => {
+        dynamicCounter++;
+        const p = document.createElement('p');
+        p.textContent = `✨ Dynamic Element #${dynamicCounter}: Newly added text automatically inherits custom glitter particles.`;
+        dynamicContainer.appendChild(p);
+        setTimeout(updateTelemetry, 150);
+      });
+
+      setInterval(updateTelemetry, 350);
+    })();
+  </script>
+</body>
+</html>
